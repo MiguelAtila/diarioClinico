@@ -1,0 +1,197 @@
+/* ============================
+   Variables de color
+   ============================ */
+:root {
+  --azul-principal: #4a6b8a;
+  --verde-oscuro: #1d3c35;
+  --beige: #e0cfa0;
+  --gris-claro: #f5f5f5;
+  --texto: #1d3c35;
+  --blanco: #ffffff;
+}
+
+/* ============================
+   Reset y body
+   ============================ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--gris-claro);
+  color: var(--texto);
+  line-height: 1.5;
+}
+
+/* ============================
+   Header / Footer
+   ============================ */
+header, footer {
+  background-color: var(--azul-principal);
+  color: var(--blanco);
+  text-align: center;
+  padding: 20px;
+}
+
+header h1 {
+  font-size: 2rem;
+}
+
+footer p {
+  font-size: 0.9rem;
+}
+
+/* ============================
+   Contenedor principal
+   ============================ */
+.container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+/* ============================
+   Hero (Inicio)
+   ============================ */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--blanco);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+  padding: 30px;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.text-content {
+  flex: 1 1 300px;
+  min-width: 280px;
+}
+
+.text-content h2 {
+  font-size: 1.8rem;
+  margin-bottom: 12px;
+  color: var(--verde-oscuro);
+}
+
+.text-content p {
+  margin-bottom: 20px;
+}
+
+.buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 18px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  text-align: center;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.primary {
+  background-color: var(--verde-oscuro);
+  color: var(--blanco);
+}
+
+.secondary {
+  background-color: var(--beige);
+  color: var(--verde-oscuro);
+}
+
+.image-content {
+  flex: 1 1 300px;
+  min-width: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-content img {
+  max-width: 100%;
+  height: auto;
+  max-height: 280px;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
+/* ============================
+   Formulario (Login / Registro)
+   ============================ */
+.form-box {
+  background: var(--blanco);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+  max-width: 400px;
+  margin: 40px auto;
+}
+
+.form-box h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: var(--verde-oscuro);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.form-box .buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.form-box .btn {
+  flex: 1 1 48%;
+}
+
+/* ============================
+   Responsive
+   ============================ */
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 25px;
+  }
+  .image-content img {
+    max-height: 200px;
+    margin-top: 20px;
+  }
+  .buttons, .form-box .buttons {
+    flex-direction: column;
+  }
+  .buttons .btn, .form-box .btn {
+    width: 100%;
+  }
+}
