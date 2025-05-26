@@ -1,24 +1,28 @@
+// js/citas.js
 import { supabase } from './supabase.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) return window.location.href = 'login.html'
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+  if (sessionError || !session) {
+    console.error('Sesión no encontrada', sessionError)
+    return window.location.href = 'login.html'
+  }
 
-  const authUserId = session.user.id
+  const idAuth = session.user.id
 
-  // Obtener el usuario_id de la tabla usuarios
-  const { data: usuarios, error: userError } = await supabase
+  // Buscar usuario_id en tabla usuarios
+  const { data: usuario, error: usuarioError } = await supabase
     .from('usuarios')
     .select('usuario_id')
-    .eq('id_auth', authUserId)
+    .eq('id_auth', idAuth)
     .single()
 
-  if (userError || !usuarios) {
-    alert('No se pudo obtener tu ID de usuario. Intenta de nuevo.')
+  if (usuarioError || !usuario) {
+    alert('Error al obtener información del usuario.')
     return
   }
 
-  const usuarioId = usuarios.usuario_id
+  const usuarioId = usuario.usuario_id
 
   await fetchCitas(usuarioId)
 
@@ -35,17 +39,24 @@ async function fetchCitas(usuarioId) {
     .select('*')
     .eq('usuario_id', usuarioId)
     .order('fecha_hora', { ascending: true })
-  if (error) return console.error(error.message)
+
+  if (error) {
+    console.error('Error al cargar citas:', error.message)
+    return
+  }
+
   displayCitas(citas)
 }
 
 function displayCitas(citas) {
   const list = document.getElementById('citas-list')
   list.innerHTML = ''
+
   if (!citas.length) {
     list.innerHTML = '<p>No tienes citas programadas.</p>'
     return
   }
+
   citas.forEach(c => {
     const li = document.createElement('li')
     li.innerHTML = `
@@ -55,6 +66,7 @@ function displayCitas(citas) {
     `
     list.appendChild(li)
   })
+
   document.querySelectorAll('.cancel-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       if (!confirm('¿Deseas cancelar esta cita?')) return
@@ -64,14 +76,7 @@ function displayCitas(citas) {
         .eq('cita_id', btn.dataset.id)
       if (error) return alert('Error al cancelar: ' + error.message)
       alert('Cita cancelada.')
-      const { data: { session } } = await supabase.auth.getSession()
-      const userId = session?.user?.id
-      const { data } = await supabase
-        .from('usuarios')
-        .select('usuario_id')
-        .eq('id_auth', userId)
-        .single()
-      await fetchCitas(data.usuario_id)
+      fetchCitas(usuarioId)
     })
   })
 }
@@ -85,14 +90,18 @@ async function programarCita(usuarioId) {
     .from('citas')
     .insert([{
       usuario_id: usuarioId,
-      psicologo_id: 1, // fijo por ahora
+      psicologo_id: 1, // Asumimos que siempre es el psicólogo 1
       fecha_hora: fechaHora,
       motivo,
       estado: 'agendada',
       tipo_cita: tipoCita
     }])
-  if (error) return alert('Error al programar cita: ' + error.message)
-  alert('Cita programada correctamente.')
-  document.getElementById('new-cita-form').reset()
-  await fetchCitas(usuarioId)
+
+  if (error) {
+    alert('Error al programar cita: ' + error.message)
+  } else {
+    alert('Cita programada correctamente.')
+    document.getElementById('new-cita-form').reset()
+    fetchCitas(usuarioId)
+  }
 }
