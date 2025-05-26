@@ -19,6 +19,8 @@
   <main class="container">
     <section class="consent-section">
       <h2>Consentimiento Informado para Atención Psicológica</h2>
+
+      <!-- Sección 1: Datos del paciente -->
       <form id="consent-form" class="form-box">
         <div class="form-group">
           <label>Nombre del paciente:</label>
@@ -40,48 +42,43 @@
           <label>Cédula profesional:</label>
           <input type="text" name="cedula" required />
         </div>
+      </form>
 
-        <fieldset class="consent-text">
-          <legend>I. OBJETIVO DE LA ATENCIÓN PSICOLÓGICA</legend>
-          <p>El presente documento tiene por objeto informar al paciente sobre el proceso de atención psicológica que se brindará, sus alcances, limitaciones, derechos y deberes, con el fin de garantizar una relación terapéutica ética, respetuosa y voluntaria.</p>
-        </fieldset>
+      <!-- Sección 2: Texto del consentimiento -->
+      <section class="consent-text-box">
+        <h3>I. OBJETIVO DE LA ATENCIÓN PSICOLÓGICA</h3>
+        <p>El presente documento tiene por objeto informar al paciente sobre el proceso de atención psicológica que se brindará, sus alcances, limitaciones, derechos y deberes, con el fin de garantizar una relación terapéutica ética, respetuosa y voluntaria.</p>
 
-        <fieldset class="consent-text">
-          <legend>II. NATURALEZA DEL SERVICIO</legend>
-          <p>Declaro haber sido informado(a) de que la atención que recibiré está basada en principios científicos y éticos, orientados a la evaluación, diagnóstico, intervención o acompañamiento psicológico, según sea necesario.</p>
-        </fieldset>
+        <h3>II. NATURALEZA DEL SERVICIO</h3>
+        <p>Declaro haber sido informado(a) de que la atención que recibiré está basada en principios científicos y éticos, orientados a la evaluación, diagnóstico, intervención o acompañamiento psicológico, según sea necesario.</p>
 
-        <fieldset class="consent-text">
-          <legend>III. CONFIDENCIALIDAD</legend>
-          <p>Se me ha informado que toda la información compartida en sesión será tratada con absoluta confidencialidad, conforme a la Ley General de Salud y la Ley Federal de Protección de Datos Personales en Posesión de los Particulares.</p>
-          <ul>
-            <li>Existen riesgos graves para mi vida o la de terceros.</li>
-            <li>Se solicita mediante orden judicial.</li>
-            <li>Se otorga consentimiento escrito para compartirla.</li>
-          </ul>
-        </fieldset>
+        <h3>III. CONFIDENCIALIDAD</h3>
+        <p>Se me ha informado que toda la información compartida en sesión será tratada con absoluta confidencialidad, conforme a la Ley General de Salud y la Ley Federal de Protección de Datos Personales en Posesión de los Particulares.</p>
+        <ul>
+          <li>Existen riesgos graves para mi vida o la de terceros.</li>
+          <li>Se solicita mediante orden judicial.</li>
+          <li>Se otorga consentimiento escrito para compartirla.</li>
+        </ul>
 
-        <fieldset class="consent-text">
-          <legend>IV. DERECHOS DEL PACIENTE</legend>
-          <ul>
-            <li>Ser tratado(a) con respeto, dignidad y sin discriminación.</li>
-            <li>Recibir información clara sobre mi proceso.</li>
-            <li>Interrumpir el tratamiento en cualquier momento.</li>
-            <li>Solicitar acceso a mis datos personales y a la información contenida en mi expediente clínico.</li>
-          </ul>
-        </fieldset>
+        <h3>IV. DERECHOS DEL PACIENTE</h3>
+        <ul>
+          <li>Ser tratado(a) con respeto, dignidad y sin discriminación.</li>
+          <li>Recibir información clara sobre mi proceso.</li>
+          <li>Interrumpir el tratamiento en cualquier momento.</li>
+          <li>Solicitar acceso a mis datos personales y a la información contenida en mi expediente clínico.</li>
+        </ul>
 
-        <fieldset class="consent-text">
-          <legend>V. LIMITACIONES DEL SERVICIO</legend>
-          <p>Entiendo que la atención psicológica no sustituye tratamiento médico ni psiquiátrico, y que su eficacia depende del compromiso del paciente. No se garantiza un resultado específico, aunque se trabajará conforme a los más altos estándares profesionales.</p>
-        </fieldset>
+        <h3>V. LIMITACIONES DEL SERVICIO</h3>
+        <p>Entiendo que la atención psicológica no sustituye tratamiento médico ni psiquiátrico, y que su eficacia depende del compromiso del paciente. No se garantiza un resultado específico, aunque se trabajará conforme a los más altos estándares profesionales.</p>
 
-        <fieldset class="consent-text">
-          <legend>VI. AUTORIZACIÓN</legend>
-          <label><input type="radio" name="autorizacion" value="autorizo" required /> Autorizo voluntariamente la intervención psicológica.</label><br/>
-          <label><input type="radio" name="autorizacion" value="no_autorizo" /> No autorizo y declino recibir el servicio.</label>
-        </fieldset>
+        <h3>VI. AUTORIZACIÓN</h3>
+        <p>Con base en lo anterior:</p>
+        <label><input type="radio" name="autorizacion" value="autorizo" required /> Autorizo voluntariamente la intervención psicológica.</label><br/>
+        <label><input type="radio" name="autorizacion" value="no_autorizo" /> No autorizo y declino recibir el servicio.</label>
+      </section>
 
+      <!-- Sección 3: Firmas -->
+      <form id="consent-form-signature" class="form-box">
         <div class="form-group">
           <label>Firma del paciente o tutor:</label>
           <input type="text" name="firma_paciente" required />
