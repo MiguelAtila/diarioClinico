@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const id_auth = session.user.id
 
-  // Buscar usuario_id en la tabla usuarios
   const { data: usuarioData, error: userFetchError } = await supabase
     .from('usuarios')
     .select('usuario_id')
@@ -27,7 +26,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const usuario_id = usuarioData.usuario_id
 
-  // Cargar citas existentes
   await fetchCitas(usuario_id)
 
   document.getElementById('new-cita-form')
@@ -37,11 +35,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     })
 })
 
-/**
- * Consultar citas del usuario
- */
+let citas = []
+
 async function fetchCitas(usuario_id) {
-  const { data: citas, error } = await supabase
+  const { data, error } = await supabase
     .from('citas')
     .select('*')
     .eq('usuario_id', usuario_id)
@@ -52,17 +49,13 @@ async function fetchCitas(usuario_id) {
     return
   }
 
-  console.log('Citas recuperadas:', citas)  // DEBUG
+  citas = data
   displayCitas(citas)
 }
 
-/**
- * Renderizar citas
- */
 function displayCitas(citas) {
   const list = document.getElementById('citas-list')
   list.innerHTML = ''
-
   if (!citas.length) {
     list.innerHTML = '<p>No tienes citas programadas.</p>'
     return
@@ -70,71 +63,75 @@ function displayCitas(citas) {
 
   citas.forEach(c => {
     const li = document.createElement('li')
-    li.className = c.estado === 'cancelada' ? 'cita cancelada' : 'cita'
+    const isCancelled = c.estado === 'cancelada'
     li.innerHTML = `
       <strong>${new Date(c.fecha_hora).toLocaleString()}</strong>
-       — ${c.motivo} (${c.tipo_cita}) - <em>${c.estado}</em>
-      ${c.estado !== 'cancelada' ? `<button class="cancel-btn" data-id="${c.cita_id}">Cancelar</button>` : ''}
+       — ${c.motivo} (${c.tipo_cita}) 
+       <span class="${isCancelled ? 'cancelled' : 'active'}">[${c.estado}]</span>
+      ${!isCancelled ? `<button class="cancel-btn" data-id="${c.cita_id}">Cancelar</button>` : ''}
     `
     list.appendChild(li)
   })
 
-  // Evento cancelar
   document.querySelectorAll('.cancel-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
+      const citaId = btn.dataset.id
+      const citaItem = citas.find(cita => cita.cita_id == citaId)
+      const fechaCita = new Date(citaItem.fecha_hora)
+      const ahora = new Date()
+      const diferenciaHoras = (fechaCita - ahora) / (1000 * 60 * 60)
+
+      if (diferenciaHoras < 24) {
+        alert('No puedes cancelar una cita con menos de 24 horas de anticipación.')
+        return
+      }
+
       if (!confirm('¿Deseas cancelar esta cita?')) return
 
       const { error } = await supabase
         .from('citas')
         .update({ estado: 'cancelada' })
-        .eq('cita_id', btn.dataset.id)
+        .eq('cita_id', citaId)
 
       if (error) {
         alert('Error al cancelar: ' + error.message)
       } else {
         alert('Cita cancelada.')
-        location.reload()
+        await fetchCitas(citaItem.usuario_id)
       }
     })
   })
 }
 
-/**
- * Crear nueva cita
- */
 async function programarCita(usuario_id) {
-  const btn = document.querySelector('#new-cita-form button[type="submit"]')
-  const originalText = btn.innerText
+  const fechaInput = document.getElementById('fechaHora').value
+  const fechaHora = new Date(fechaInput)
+  const now = new Date()
 
-  btn.disabled = true
-  btn.innerText = 'Agendando...'
+  if (fechaHora <= now) {
+    alert('No puedes agendar una cita en una fecha u hora pasada.')
+    return
+  }
 
-  const fechaHora = document.getElementById('fechaHora').value
-  const motivo    = document.getElementById('motivo').value
-  const tipoCita  = document.getElementById('tipoCita').value
+  const motivo = document.getElementById('motivo').value
+  const tipoCita = document.getElementById('tipoCita').value
 
   const { error } = await supabase
     .from('citas')
-    .insert([
-      {
-        usuario_id,
-        fecha_hora: fechaHora,
-        motivo,
-        tipo_cita: tipoCita,
-        estado: 'agendada',
-        psicologo_id: 1 // por ahora fijo
-      }
-    ])
+    .insert([{
+      usuario_id,
+      fecha_hora: fechaHora.toISOString(),
+      motivo,
+      tipo_cita: tipoCita,
+      estado: 'agendada',
+      psicologo_id: 1
+    }])
 
   if (error) {
     alert('Error al programar cita: ' + error.message)
-    btn.disabled = false
-    btn.innerText = originalText
   } else {
     alert('Cita programada correctamente.')
     document.getElementById('new-cita-form').reset()
     await fetchCitas(usuario_id)
-    btn.disabled = false
-    btn.innerText = originalText
   }
 }

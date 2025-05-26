@@ -127,3 +127,14 @@
 .session-card .label {
   font-weight: bold;
 }
+
+/* Estilo visual para el estado de las citas */
+span.cancelled {
+  color: red;
+  font-weight: bold;
+}
+
+span.active {
+  color: green;
+  font-weight: bold;
+}
