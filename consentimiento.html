@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Consentimiento Informado – Diario Clínico</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+  <header>
+    <h1>Diario Clínico</h1>
+    <nav class="user-nav">
+      <span class="user-name">Hola, Paciente</span>
+      <button id="logoutBtn">Cerrar sesión</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="consent-section">
+      <h2>Consentimiento Informado para Atención Psicológica</h2>
+
+      <form id="consent-form" class="form-box">
+        <!-- Datos generales -->
+        <div class="form-group">
+          <label for="paciente-nombre">Nombre del paciente</label>
+          <input type="text" id="paciente-nombre" name="pacienteNombre" required>
+        </div>
+        <div class="form-group two-cols">
+          <div>
+            <label for="paciente-edad">Edad</label>
+            <input type="number" id="paciente-edad" name="pacienteEdad" min="0" required>
+          </div>
+          <div>
+            <label for="consent-fecha">Fecha</label>
+            <input type="date" id="consent-fecha" name="consentFecha" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="terapeuta-nombre">Nombre del terapeuta</label>
+          <input type="text" id="terapeuta-nombre" name="terapeutaNombre" required>
+        </div>
+        <div class="form-group">
+          <label for="terapeuta-cedula">Cédula profesional</label>
+          <input type="text" id="terapeuta-cedula" name="terapeutaCedula" required>
+        </div>
+
+        <hr>
+
+        <!-- Secciones informativas -->
+        <div class="info-block">
+          <h3>I. Objetivo de la Atención Psicológica</h3>
+          <p>El presente documento tiene por objeto informar al paciente sobre el proceso de atención psicológica que se brindará, sus alcances, limitaciones, derechos y deberes, con el fin de garantizar una relación terapéutica ética, respetuosa y voluntaria.</p>
+        </div>
+
+        <div class="info-block">
+          <h3>II. Naturaleza del Servicio</h3>
+          <p>Declaro haber sido informado(a) de que la atención que recibiré está basada en principios científicos y éticos, orientados a la evaluación, diagnóstico, intervención o acompañamiento psicológico, según sea necesario.</p>
+        </div>
+
+        <div class="info-block">
+          <h3>III. Confidencialidad</h3>
+          <p>Se me ha informado que toda la información compartida en sesión será tratada con absoluta confidencialidad, conforme a la Ley General de Salud y la Ley Federal de Protección de Datos Personales en Posesión de los Particulares. Solo podrá ser revelada si:</p>
+          <ul>
+            <li>Existen riesgos graves para mi vida o la de terceros.</li>
+            <li>Se solicita mediante orden judicial.</li>
+            <li>Se otorga consentimiento escrito para compartirla.</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h3>IV. Derechos del Paciente</h3>
+          <ul>
+            <li>Ser tratado(a) con respeto, dignidad y sin discriminación.</li>
+            <li>Recibir información clara sobre mi proceso.</li>
+            <li>Interrumpir el tratamiento en cualquier momento.</li>
+            <li>Solicitar acceso a mis datos personales y a la información contenida en mi expediente clínico.</li>
+          </ul>
+        </div>
+
+        <div class="info-block">
+          <h3>V. Limitaciones del Servicio</h3>
+          <p>Entiendo que la atención psicológica no sustituye tratamiento médico ni psiquiátrico, y que su eficacia depende del compromiso del paciente. No se garantiza un resultado específico, aunque se trabajará conforme a los más altos estándares profesionales.</p>
+        </div>
+
+        <hr>
+
+        <!-- Autorización -->
+        <div class="info-block">
+          <h3>VI. Autorización</h3>
+          <div class="form-group">
+            <input type="radio" id="autorizo-si" name="autorizacion" value="si" required>
+            <label for="autorizo-si">Autorizo voluntariamente la intervención psicológica.</label>
+          </div>
+          <div class="form-group">
+            <input type="radio" id="autorizo-no" name="autorizacion" value="no">
+            <label for="autorizo-no">No autorizo y declino recibir el servicio.</label>
+          </div>
+        </div>
+
+        <!-- Firmas digitales (placeholders) -->
+        <div class="info-block">
+          <h3>Firmas</h3>
+          <div class="form-group">
+            <label for="firma-paciente">Firma del paciente (nombre completo)</label>
+            <input type="text" id="firma-paciente" name="firmaPaciente" placeholder="Escribe tu nombre completo" required>
+          </div>
+          <div class="form-group">
+            <label for="firma-terapeuta">Firma del terapeuta (nombre completo)</label>
+            <input type="text" id="firma-terapeuta" name="firmaTerapeuta" placeholder="Nombre del terapeuta" required>
+          </div>
+          <div class="form-group">
+            <label for="lugar-fecha">Lugar y fecha</label>
+            <input type="text" id="lugar-fecha" name="lugarFecha" placeholder="Ciudad, DD/MM/AAAA" required>
+          </div>
+        </div>
+
+        <hr>
+
+        <p>Este consentimiento puede ser modificado o revocado por el paciente en cualquier momento, notificándolo por escrito.</p>
+
+        <!-- Botón de envío -->
+        <div class="form-group">
+          <button type="submit" class="btn primary">Enviar Consentimiento</button>
+          <a href="dashboard.html" class="btn secondary">Cancelar</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Diario Clínico</p>
+  </footer>
+
+  <script src="js/consentimiento.js"></script>
+</body>
+</html>

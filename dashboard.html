@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard – Diario Clínico</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+  <header>
+    <h1>Diario Clínico</h1>
+    <nav class="user-nav">
+      <span class="user-name">Hola, Paciente</span>
+      <button id="logoutBtn">Cerrar sesión</button>
+    </nav>
+  </header>
+
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <ul>
+        <li><a href="dashboard.html">📊 Dashboard</a></li>
+        <li><a href="citas.html">📅 Mis Citas</a></li>
+        <li><a href="sesiones.html">📖 Historial</a></li>
+        <li><a href="recursos.html">📚 Recursos</a></li>
+      </ul>
+    </aside>
+
+    <main class="main-content">
+      <!-- Resumen rápido -->
+      <section class="cards">
+        <div class="card">
+          <h3>Próxima Cita</h3>
+          <p id="next-appointment">–</p>
+          <small id="therapist-name"></small>
+        </div>
+        <div class="card">
+          <h3>Sesiones Realizadas</h3>
+          <p id="sessions-count">–</p>
+        </div>
+        <div class="card">
+          <h3>Estado Emocional</h3>
+          <p id="emotional-state">–</p>
+        </div>
+      </section>
+
+      <!-- Lista de próximas citas -->
+      <section class="upcoming">
+        <h2>Próximas Citas</h2>
+        <ul id="upcoming-list"></ul>
+      </section>
+
+      <!-- Gráfica de progreso -->
+      <section class="chart-section">
+        <h2>Progreso Emocional</h2>
+        <canvas id="progress-chart"></canvas>
+      </section>
+
+      <!-- Recursos recomendados -->
+      <section class="resources">
+        <h2>Recursos Recomendados</h2>
+        <div id="resources-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <p>© 2025 Diario Clínico</p>
+  </footer>
+
+  <!-- Chart.js desde CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lógica del dashboard -->
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
