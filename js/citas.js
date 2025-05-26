@@ -45,7 +45,7 @@ async function fetchCitas(usuario_id) {
     .from('citas')
     .select('*')
     .eq('usuario_id', usuario_id)
-    .eq('estado', 'agendada')  // Solo citas activas
+    // .eq('estado', 'agendada') // Temporalmente quitado para debug
     .order('fecha_hora', { ascending: true })
 
   if (error) {
@@ -53,6 +53,7 @@ async function fetchCitas(usuario_id) {
     return
   }
 
+  console.log('Citas recuperadas:', citas)  // DEBUG
   displayCitas(citas)
 }
 
