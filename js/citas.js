@@ -45,9 +45,13 @@ async function fetchCitas(usuario_id) {
     .from('citas')
     .select('*')
     .eq('usuario_id', usuario_id)
+    .eq('estado', 'agendada')  // Solo citas activas
     .order('fecha_hora', { ascending: true })
 
-  if (error) return console.error(error.message)
+  if (error) {
+    console.error('Error al obtener citas:', error.message)
+    return
+  }
 
   displayCitas(citas)
 }
