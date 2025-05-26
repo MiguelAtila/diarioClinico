@@ -48,22 +48,26 @@ async function signUpUser() {
     return
   }
 
-  const { user, error: signupError } = await supabase.auth.signUp({
-    email,
-    password
-  })
+  const { data, error: signupError } = await supabase.auth.signUp({
+  email,
+  password
+});
 
-  if (signupError) {
-    alert(`Error al registrarse: ${signupError.message}`)
-    return
-  }
+const userId = data?.user?.id;
 
-  // Insertar en tabla usuarios
-  const { error: insertError } = await supabase.from('usuarios').insert({
-    id_auth: user.id,
+if (signupError || !userId) {
+  alert(`Error al registrarse: ${signupError?.message || 'No se obtuvo ID de usuario'}`);
+  return;
+}
+
+// Insertar en usuarios
+const { error: insertError } = await supabase
+  .from('usuarios')
+  .insert({
+    id_auth: userId,
     nombre,
     apellidos
-  })
+  });
 
   if (insertError) {
     alert(`Usuario creado, pero error al guardar en tabla usuarios: ${insertError.message}`)
