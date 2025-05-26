@@ -6,6 +6,31 @@
   <title>Consentimiento Informado – Diario Clínico</title>
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/dashboard.css" />
+  <style>
+    .consent-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .consent-column {
+      flex: 1 1 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .consent-text-box {
+      margin-top: 2rem;
+    }
+    .form-group label {
+      font-weight: bold;
+    }
+    @media screen and (max-width: 768px) {
+      .consent-grid {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -20,31 +45,8 @@
     <section class="consent-section">
       <h2>Consentimiento Informado para Atención Psicológica</h2>
 
-      <!-- Sección 1: Datos del paciente -->
-      <form id="consent-form" class="form-box">
-        <div class="form-group">
-          <label>Nombre del paciente:</label>
-          <input type="text" name="nombre_paciente" required />
-        </div>
-        <div class="form-group">
-          <label>Edad:</label>
-          <input type="number" name="edad" required />
-        </div>
-        <div class="form-group">
-          <label>Fecha:</label>
-          <input type="date" name="fecha" required />
-        </div>
-        <div class="form-group">
-          <label>Nombre del terapeuta:</label>
-          <input type="text" name="nombre_terapeuta" required />
-        </div>
-        <div class="form-group">
-          <label>Cédula profesional:</label>
-          <input type="text" name="cedula" required />
-        </div>
-      </form>
+      <p>Antes de proceder con el llenado del consentimiento, le invitamos a leer detenidamente el siguiente texto, que contiene los principios, derechos, limitaciones y aspectos éticos que rigen la atención psicológica proporcionada. Esta lectura garantiza una comprensión clara del servicio que usted recibirá y de las condiciones bajo las cuales se otorga.</p>
 
-      <!-- Sección 2: Texto del consentimiento -->
       <section class="consent-text-box">
         <h3>I. OBJETIVO DE LA ATENCIÓN PSICOLÓGICA</h3>
         <p>El presente documento tiene por objeto informar al paciente sobre el proceso de atención psicológica que se brindará, sus alcances, limitaciones, derechos y deberes, con el fin de garantizar una relación terapéutica ética, respetuosa y voluntaria.</p>
@@ -77,24 +79,40 @@
         <label><input type="radio" name="autorizacion" value="no_autorizo" /> No autorizo y declino recibir el servicio.</label>
       </section>
 
-      <!-- Sección 3: Firmas -->
-      <form id="consent-form-signature" class="form-box">
-        <div class="form-group">
-          <label>Firma del paciente o tutor:</label>
-          <input type="text" name="firma_paciente" required />
-        </div>
-        <div class="form-group">
-          <label>Firma del terapeuta:</label>
-          <input type="text" name="firma_terapeuta" required />
-        </div>
-        <div class="form-group">
-          <label>Lugar y fecha:</label>
-          <input type="text" name="lugar_fecha" required />
+      <!-- Sección inferior en columnas -->
+      <form id="consent-form" class="consent-grid">
+        <div class="consent-column">
+          <div class="form-group">
+            <label>Nombre del paciente:</label>
+            <input type="text" name="nombre_paciente" required />
+          </div>
+          <div class="form-group">
+            <label>Edad:</label>
+            <input type="number" name="edad" required />
+          </div>
+          <div class="form-group">
+            <label>Fecha:</label>
+            <input type="date" name="fecha" required />
+          </div>
         </div>
 
-        <p class="note">Este consentimiento puede ser modificado o revocado por el paciente en cualquier momento, notificándolo por escrito.</p>
+        <div class="consent-column">
+          <div class="form-group">
+            <label>Firma del paciente o tutor:</label>
+            <input type="text" name="firma_paciente" required />
+          </div>
+          <div class="form-group">
+            <label>Firma del terapeuta:</label>
+            <input type="text" name="firma_terapeuta" required />
+          </div>
+          <div class="form-group">
+            <label>Lugar y fecha:</label>
+            <input type="text" name="lugar_fecha" required />
+          </div>
+        </div>
 
-        <div class="form-group">
+        <div class="form-group" style="width: 100%;">
+          <p class="note">Este consentimiento puede ser modificado o revocado por el paciente en cualquier momento, notificándolo por escrito.</p>
           <button type="submit" class="btn primary">Enviar Consentimiento</button>
           <a href="dashboard.html" class="btn secondary">Cancelar</a>
         </div>
