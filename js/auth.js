@@ -2,8 +2,10 @@
 import { supabase } from './supabase.js'
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Formulario de login
   const loginForm = document.getElementById('login-form')
+  const registerForm = document.getElementById('register-form')
+  const logoutBtn = document.getElementById('logoutBtn')
+
   if (loginForm) {
     loginForm.addEventListener('submit', async e => {
       e.preventDefault()
@@ -11,8 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   }
 
-  // Formulario de registro
-  const registerForm = document.getElementById('register-form')
   if (registerForm) {
     registerForm.addEventListener('submit', async e => {
       e.preventDefault()
@@ -20,15 +20,12 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   }
 
-  // Botón logout
-  const logoutBtn = document.getElementById('logoutBtn')
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
       await signOutUser()
     })
   }
 
-  // Redirección si ya está logueado
   supabase.auth.onAuthStateChange((event, session) => {
     if (session && window.location.pathname.endsWith('login.html')) {
       window.location.href = 'dashboard.html'
@@ -37,74 +34,63 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 /**
- * Registra un nuevo usuario en Supabase Auth y en tabla usuarios
+ * Registrar nuevo usuario
  */
 async function signUpUser() {
-  const nombre    = document.getElementById('nombre')?.value.trim()
-  const apellidos = document.getElementById('apellidos')?.value.trim()
-  const email     = document.getElementById('email')?.value.trim()
-  const password  = document.getElementById('password')?.value
-  const confirm   = document.getElementById('confirm')?.value
-
-  if (!nombre || !apellidos || !email || !password || !confirm) {
-    alert('Por favor completa todos los campos.')
-    return
-  }
+  const nombre = document.getElementById('nombre').value
+  const apellidos = document.getElementById('apellidos').value
+  const email = document.getElementById('email').value
+  const password = document.getElementById('password').value
+  const confirm = document.getElementById('confirm').value
 
   if (password !== confirm) {
     alert('Las contraseñas no coinciden.')
     return
   }
 
-  // Crear cuenta en Supabase Auth
-  const { user, session, error } = await supabase.auth.signUp(
-    { email, password }
-  )
+  const { user, error: signupError } = await supabase.auth.signUp({
+    email,
+    password
+  })
 
-  if (error) {
-    alert('Error al registrar usuario: ' + error.message)
+  if (signupError) {
+    alert(`Error al registrarse: ${signupError.message}`)
     return
   }
 
-  // Si se creó correctamente, insertar en tabla usuarios
-  const { error: dbError } = await supabase
-    .from('usuarios')
-    .insert([
-      {
-        nombre,
-        apellidos,
-        email,
-        fecha_registro: new Date().toISOString(),
-        activo: true
-      }
-    ])
+  // Insertar en tabla usuarios
+  const { error: insertError } = await supabase.from('usuarios').insert({
+    id_auth: user.id,
+    nombre,
+    apellidos
+  })
 
-  if (dbError) {
-    alert('Usuario registrado, pero ocurrió un error al guardar en la base de datos: ' + dbError.message)
+  if (insertError) {
+    alert(`Usuario creado, pero error al guardar en tabla usuarios: ${insertError.message}`)
   } else {
-    alert('Registro exitoso. Confirma tu correo antes de iniciar sesión.')
+    alert('Registro exitoso. Revisa tu correo para confirmar tu cuenta.')
     window.location.href = 'login.html'
   }
 }
 
 /**
- * Inicia sesión con Supabase Auth
+ * Login
  */
 async function signInUser() {
-  const email    = document.getElementById('email')?.value.trim()
-  const password = document.getElementById('password')?.value
+  const email = document.getElementById('email').value
+  const password = document.getElementById('password').value
 
-  const { user, session, error } = await supabase.auth.signIn({ email, password })
+  const { error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) {
-    alert('Error al iniciar sesión: ' + error.message)
+    alert('Error de login: ' + error.message)
   } else {
     window.location.href = 'dashboard.html'
   }
 }
 
 /**
- * Cierra sesión
+ * Logout
  */
 async function signOutUser() {
   const { error } = await supabase.auth.signOut()
