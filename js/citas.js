@@ -2,8 +2,13 @@
 import { supabase } from './supabase.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const session = supabase.auth.session()
-  if (!session) return window.location.href = 'login.html'
+  const {
+    data: { session },
+    error
+  } = await supabase.auth.getSession()
+
+  if (!session) return (window.location.href = 'login.html')
+
   const userId = session.user.id
 
   await fetchCitas(userId)
@@ -21,7 +26,7 @@ async function fetchCitas(userId) {
     .select('*')
     .eq('usuario_id', userId)
     .order('fecha_hora', { ascending: true })
-  if (error) return console.error(error.message)
+  if (error) return console.error('Error al cargar citas:', error.message)
   displayCitas(citas)
 }
 
@@ -41,7 +46,6 @@ function displayCitas(citas) {
     `
     list.appendChild(li)
   })
-
   document.querySelectorAll('.cancel-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       if (!confirm('¿Deseas cancelar esta cita?')) return
@@ -51,33 +55,32 @@ function displayCitas(citas) {
         .eq('cita_id', btn.dataset.id)
       if (error) return alert('Error al cancelar: ' + error.message)
       alert('Cita cancelada.')
-      fetchCitas(supabase.auth.session().user.id)
+      const {
+        data: { session }
+      } = await supabase.auth.getSession()
+      fetchCitas(session.user.id)
     })
   })
 }
 
 async function programarCita(userId) {
   const fechaHora = document.getElementById('fechaHora').value
-  const motivo = document.getElementById('motivo').value
-  const tipoCita = document.getElementById('tipoCita').value
+  const motivo    = document.getElementById('motivo').value
+  const tipoCita  = document.getElementById('tipoCita').value
 
   const { error } = await supabase
     .from('citas')
     .insert([{
       usuario_id: userId,
-      psicologo_id: 1, // Único psicólogo para simplificar
       fecha_hora: fechaHora,
       motivo,
       estado: 'agendada',
       tipo_cita: tipoCita,
-      fecha_creacion: new Date().toISOString()
+      psicologo_id: 1 // ID fijo como acordamos
     }])
 
-  if (error) {
-    alert('Error al programar cita: ' + error.message)
-  } else {
-    alert('Cita programada correctamente.')
-    document.getElementById('new-cita-form').reset()
-    fetchCitas(userId)
-  }
+  if (error) return alert('Error al programar cita: ' + error.message)
+  alert('Cita programada correctamente.')
+  document.getElementById('new-cita-form').reset()
+  fetchCitas(userId)
 }
