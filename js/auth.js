@@ -48,26 +48,21 @@ async function signUpUser() {
     return
   }
 
-  const { data, error: signupError } = await supabase.auth.signUp({
-  email,
-  password
-});
+  const { data, error: signupError } = await supabase.auth.signUp({ email, password })
+  const userId = data?.user?.id;
 
-const userId = data?.user?.id;
+  if (signupError || !userId) {
+    alert(`Error al registrarse: ${signupError?.message || 'No se obtuvo ID de usuario'}`)
+    return
+  }
 
-if (signupError || !userId) {
-  alert(`Error al registrarse: ${signupError?.message || 'No se obtuvo ID de usuario'}`);
-  return;
-}
-
-// Insertar en usuarios
-const { error: insertError } = await supabase
-  .from('usuarios')
-  .insert({
-    id_auth: userId,
-    nombre,
-    apellidos
-  });
+  const { error: insertError } = await supabase
+    .from('usuarios')
+    .insert({
+      id_auth: userId,
+      nombre,
+      apellidos
+    })
 
   if (insertError) {
     alert(`Usuario creado, pero error al guardar en tabla usuarios: ${insertError.message}`)
@@ -81,15 +76,22 @@ const { error: insertError } = await supabase
  * Login
  */
 async function signInUser() {
-  const email = document.getElementById('email').value
-  const password = document.getElementById('password').value
+  const email = document.getElementById('email').value.trim()
+  const password = document.getElementById('password').value.trim()
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) {
-    alert('Error de login: ' + error.message)
-  } else {
+    alert('Error al iniciar sesión: ' + error.message)
+    return
+  }
+
+  // Verificamos que haya sesión activa
+  const session = data?.session
+  if (session) {
     window.location.href = 'dashboard.html'
+  } else {
+    alert('No se pudo establecer sesión. Revisa tus credenciales.')
   }
 }
 
