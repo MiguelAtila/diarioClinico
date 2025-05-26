@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Historial de Sesiones – Diario Clínico</title>
   <link rel="stylesheet" href="css/styles.css" />
@@ -22,7 +22,6 @@
         <li><a href="dashboard.html">📊 Dashboard</a></li>
         <li><a href="citas.html">📅 Mis Citas</a></li>
         <li><a href="sesiones.html" class="active">📖 Historial</a></li>
-        <li><a href="recursos.html">📚 Recursos</a></li>
         <li><a href="consentimiento.html">✅ Consentimiento</a></li>
       </ul>
     </aside>
@@ -30,9 +29,7 @@
     <main class="main-content">
       <section class="sessions-list">
         <h2>Historial de Sesiones</h2>
-        <div id="sessions-list">
-          <!-- Aquí se inyectarán las tarjetas de sesión -->
-        </div>
+        <div id="sessions-list"></div>
       </section>
     </main>
   </div>
@@ -41,9 +38,9 @@
     <p>© 2025 Diario Clínico</p>
   </footer>
 
-  <!-- Supabase client (si lo usas) -->
-  <!-- <script src="js/supabase.js"></script> -->
-  <!-- Lógica de sesión -->
+  <!-- Supabase + Sesiones + routing -->
+  <script type="module" src="js/supabase.js"></script>
   <script src="js/sesiones.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
