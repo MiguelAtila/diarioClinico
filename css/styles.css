@@ -218,3 +218,9 @@ footer p {
 .two-cols > div {
   flex: 1;
 }
+
+.cita.cancelada {
+  opacity: 0.6;
+  text-decoration: line-through;
+  color: #b00;
+}

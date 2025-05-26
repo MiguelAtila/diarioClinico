@@ -45,7 +45,6 @@ async function fetchCitas(usuario_id) {
     .from('citas')
     .select('*')
     .eq('usuario_id', usuario_id)
-    // .eq('estado', 'agendada') // Temporalmente quitado para debug
     .order('fecha_hora', { ascending: true })
 
   if (error) {
@@ -63,6 +62,7 @@ async function fetchCitas(usuario_id) {
 function displayCitas(citas) {
   const list = document.getElementById('citas-list')
   list.innerHTML = ''
+
   if (!citas.length) {
     list.innerHTML = '<p>No tienes citas programadas.</p>'
     return
@@ -70,10 +70,11 @@ function displayCitas(citas) {
 
   citas.forEach(c => {
     const li = document.createElement('li')
+    li.className = c.estado === 'cancelada' ? 'cita cancelada' : 'cita'
     li.innerHTML = `
       <strong>${new Date(c.fecha_hora).toLocaleString()}</strong>
-       — ${c.motivo} (${c.tipo_cita})
-      <button class="cancel-btn" data-id="${c.cita_id}">Cancelar</button>
+       — ${c.motivo} (${c.tipo_cita}) - <em>${c.estado}</em>
+      ${c.estado !== 'cancelada' ? `<button class="cancel-btn" data-id="${c.cita_id}">Cancelar</button>` : ''}
     `
     list.appendChild(li)
   })
