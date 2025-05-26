@@ -21,10 +21,7 @@ async function fetchCitas(userId) {
     .select('*')
     .eq('usuario_id', userId)
     .order('fecha_hora', { ascending: true })
-  if (error) {
-    console.error('Error al obtener citas:', error.message)
-    return
-  }
+  if (error) return console.error(error.message)
   displayCitas(citas)
 }
 
@@ -61,23 +58,26 @@ function displayCitas(citas) {
 
 async function programarCita(userId) {
   const fechaHora = document.getElementById('fechaHora').value
-  const motivo    = document.getElementById('motivo').value
-  const tipoCita  = document.getElementById('tipoCita').value
+  const motivo = document.getElementById('motivo').value
+  const tipoCita = document.getElementById('tipoCita').value
 
   const { error } = await supabase
     .from('citas')
     .insert([{
       usuario_id: userId,
-      psicologo_id: 1,  // Asignado fijo por ahora
+      psicologo_id: 1, // Único psicólogo para simplificar
       fecha_hora: fechaHora,
       motivo,
       estado: 'agendada',
-      tipo_cita: tipoCita
+      tipo_cita: tipoCita,
+      fecha_creacion: new Date().toISOString()
     }])
 
-  if (error) return alert('Error al programar cita: ' + error.message)
-
-  alert('Cita programada correctamente.')
-  document.getElementById('new-cita-form').reset()
-  fetchCitas(userId)
+  if (error) {
+    alert('Error al programar cita: ' + error.message)
+  } else {
+    alert('Cita programada correctamente.')
+    document.getElementById('new-cita-form').reset()
+    fetchCitas(userId)
+  }
 }
