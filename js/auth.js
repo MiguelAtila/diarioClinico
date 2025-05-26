@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   }
 
-  // Botón de logout
+  // Botón logout
   const logoutBtn = document.getElementById('logoutBtn')
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   }
 
-  // Redirección si ya hay sesión activa
+  // Redirección si ya está logueado
   supabase.auth.onAuthStateChange((event, session) => {
     if (session && window.location.pathname.endsWith('login.html')) {
       window.location.href = 'dashboard.html'
@@ -37,47 +37,50 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 /**
- * Registra un nuevo usuario en Supabase Auth + lo guarda en la tabla usuarios
+ * Registra un nuevo usuario en Supabase Auth y en tabla usuarios
  */
 async function signUpUser() {
-  const nombreCompleto = document.getElementById('nombre')?.value || ''
-  const email           = document.getElementById('email').value
-  const password        = document.getElementById('password').value
-  const confirm         = document.getElementById('confirm').value
+  const nombre    = document.getElementById('nombre')?.value.trim()
+  const apellidos = document.getElementById('apellidos')?.value.trim()
+  const email     = document.getElementById('email')?.value.trim()
+  const password  = document.getElementById('password')?.value
+  const confirm   = document.getElementById('confirm')?.value
+
+  if (!nombre || !apellidos || !email || !password || !confirm) {
+    alert('Por favor completa todos los campos.')
+    return
+  }
 
   if (password !== confirm) {
     alert('Las contraseñas no coinciden.')
     return
   }
 
-  // Separar nombre y apellidos si es posible
-  const partes = nombreCompleto.trim().split(' ')
-  const nombre = partes.slice(0, -1).join(' ') || nombreCompleto
-  const apellidos = partes.slice(-1).join(' ') || ''
+  // Crear cuenta en Supabase Auth
+  const { user, session, error } = await supabase.auth.signUp(
+    { email, password }
+  )
 
-  // Registro con Auth
-  const { user, error: signUpError } = await supabase.auth.signUp({
-    email,
-    password
-  })
-
-  if (signUpError) {
-    alert('Error al registrarse: ' + signUpError.message)
+  if (error) {
+    alert('Error al registrar usuario: ' + error.message)
     return
   }
 
-  // Guardar en tabla usuarios
-  const { error: insertError } = await supabase.from('usuarios').insert([
-    {
-      usuario_id: user.id,  // UID del auth
-      nombre,
-      apellidos,
-      email
-    }
-  ])
+  // Si se creó correctamente, insertar en tabla usuarios
+  const { error: dbError } = await supabase
+    .from('usuarios')
+    .insert([
+      {
+        nombre,
+        apellidos,
+        email,
+        fecha_registro: new Date().toISOString(),
+        activo: true
+      }
+    ])
 
-  if (insertError) {
-    alert('Registro en auth exitoso, pero error al guardar en base de datos: ' + insertError.message)
+  if (dbError) {
+    alert('Usuario registrado, pero ocurrió un error al guardar en la base de datos: ' + dbError.message)
   } else {
     alert('Registro exitoso. Confirma tu correo antes de iniciar sesión.')
     window.location.href = 'login.html'
@@ -85,23 +88,23 @@ async function signUpUser() {
 }
 
 /**
- * Iniciar sesión
+ * Inicia sesión con Supabase Auth
  */
 async function signInUser() {
-  const email    = document.getElementById('email').value
-  const password = document.getElementById('password').value
+  const email    = document.getElementById('email')?.value.trim()
+  const password = document.getElementById('password')?.value
 
-  const { session, error } = await supabase.auth.signInWithPassword({ email, password })
+  const { user, session, error } = await supabase.auth.signIn({ email, password })
 
   if (error) {
-    alert('Error de login: ' + error.message)
+    alert('Error al iniciar sesión: ' + error.message)
   } else {
     window.location.href = 'dashboard.html'
   }
 }
 
 /**
- * Cerrar sesión
+ * Cierra sesión
  */
 async function signOutUser() {
   const { error } = await supabase.auth.signOut()
