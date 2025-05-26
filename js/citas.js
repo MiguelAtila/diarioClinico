@@ -103,6 +103,12 @@ function displayCitas(citas) {
  * Crear nueva cita
  */
 async function programarCita(usuario_id) {
+  const btn = document.querySelector('#new-cita-form button[type="submit"]')
+  const originalText = btn.innerText
+
+  btn.disabled = true
+  btn.innerText = 'Agendando...'
+
   const fechaHora = document.getElementById('fechaHora').value
   const motivo    = document.getElementById('motivo').value
   const tipoCita  = document.getElementById('tipoCita').value
@@ -122,9 +128,13 @@ async function programarCita(usuario_id) {
 
   if (error) {
     alert('Error al programar cita: ' + error.message)
+    btn.disabled = false
+    btn.innerText = originalText
   } else {
     alert('Cita programada correctamente.')
     document.getElementById('new-cita-form').reset()
     await fetchCitas(usuario_id)
+    btn.disabled = false
+    btn.innerText = originalText
   }
 }
