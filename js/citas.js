@@ -1,53 +1,44 @@
+// js/citas.js
 import { supabase } from './supabase.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
   const {
-    data: { user }
-  } = await supabase.auth.getUser()
+    data: { session }
+  } = await supabase.auth.getSession()
 
-  if (!user) return window.location.href = 'login.html'
+  if (!session) return (window.location.href = 'login.html')
 
-  // Obtenemos el usuario_id interno a partir de id_auth
-  const { data: userData, error: userError } = await supabase
-    .from('usuarios')
-    .select('usuario_id')
-    .eq('id_auth', user.id)
-    .single()
+  const userId = session.user.id
 
-  if (userError || !userData) {
-    alert('No se encontró el usuario registrado en la base de datos.')
-    return
-  }
+  await fetchCitas(userId)
 
-  const usuarioId = userData.usuario_id
-
-  await fetchCitas(usuarioId)
-
-  document.getElementById('new-cita-form')
-    .addEventListener('submit', async e => {
-      e.preventDefault()
-      await programarCita(usuarioId)
-    })
+  document.getElementById('new-cita-form').addEventListener('submit', async e => {
+    e.preventDefault()
+    await programarCita(userId)
+  })
 })
 
-async function fetchCitas(usuarioId) {
+async function fetchCitas(userId) {
   const { data: citas, error } = await supabase
     .from('citas')
     .select('*')
-    .eq('usuario_id', usuarioId)
+    .eq('usuario_id', userId)
     .order('fecha_hora', { ascending: true })
 
-  if (error) return console.error(error.message)
+  if (error) return console.error('Error al obtener citas:', error.message)
+
   displayCitas(citas)
 }
 
 function displayCitas(citas) {
   const list = document.getElementById('citas-list')
   list.innerHTML = ''
+
   if (!citas.length) {
     list.innerHTML = '<p>No tienes citas programadas.</p>'
     return
   }
+
   citas.forEach(c => {
     const li = document.createElement('li')
     li.innerHTML = `
@@ -60,39 +51,50 @@ function displayCitas(citas) {
 
   document.querySelectorAll('.cancel-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
+      const citaId = btn.dataset.id
       if (!confirm('¿Deseas cancelar esta cita?')) return
       const { error } = await supabase
         .from('citas')
         .update({ estado: 'cancelada' })
-        .eq('cita_id', btn.dataset.id)
-      if (error) return alert('Error al cancelar: ' + error.message)
-      alert('Cita cancelada.')
-      location.reload()
+        .eq('cita_id', citaId)
+
+      if (error) {
+        alert('Error al cancelar: ' + error.message)
+      } else {
+        alert('Cita cancelada.')
+        const {
+          data: { session }
+        } = await supabase.auth.getSession()
+        await fetchCitas(session.user.id)
+      }
     })
   })
 }
 
-async function programarCita(usuarioId) {
+async function programarCita(userId) {
   const fechaHora = document.getElementById('fechaHora').value
-  const motivo    = document.getElementById('motivo').value
-  const tipoCita  = document.getElementById('tipoCita').value
+  const motivo = document.getElementById('motivo').value
+  const tipoCita = document.getElementById('tipoCita').value
 
-  const { error } = await supabase
-    .from('citas')
-    .insert([
-      {
-        usuario_id: usuarioId,
-        fecha_hora: fechaHora,
-        motivo,
-        estado: 'agendada',
-        tipo_cita: tipoCita,
-        psicologo_id: 1 // Fijo por ahora
-      }
-    ])
+  // psicologo_id fijo (por ahora solo Miguel Atilano = 1)
+  const psicologoId = 1
 
-  if (error) return alert('Error al programar cita: ' + error.message)
+  const { error } = await supabase.from('citas').insert([
+    {
+      usuario_id: userId,
+      psicologo_id: psicologoId,
+      fecha_hora: fechaHora,
+      motivo,
+      estado: 'agendada',
+      tipo_cita: tipoCita
+    }
+  ])
 
-  alert('Cita programada correctamente.')
-  document.getElementById('new-cita-form').reset()
-  fetchCitas(usuarioId)
+  if (error) {
+    alert('Error al programar cita: ' + error.message)
+  } else {
+    alert('Cita programada correctamente.')
+    document.getElementById('new-cita-form').reset()
+    await fetchCitas(userId)
+  }
 }
