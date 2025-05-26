@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const userId = session.user.id
 
   await fetchCitas(userId)
+
   document.getElementById('new-cita-form')
     .addEventListener('submit', async e => {
       e.preventDefault()
@@ -20,7 +21,10 @@ async function fetchCitas(userId) {
     .select('*')
     .eq('usuario_id', userId)
     .order('fecha_hora', { ascending: true })
-  if (error) return console.error(error.message)
+  if (error) {
+    console.error('Error al obtener citas:', error.message)
+    return
+  }
   displayCitas(citas)
 }
 
@@ -40,6 +44,7 @@ function displayCitas(citas) {
     `
     list.appendChild(li)
   })
+
   document.querySelectorAll('.cancel-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       if (!confirm('¿Deseas cancelar esta cita?')) return
@@ -61,8 +66,17 @@ async function programarCita(userId) {
 
   const { error } = await supabase
     .from('citas')
-    .insert([{ usuario_id: userId, fecha_hora: fechaHora, motivo, estado: 'agendada', tipo_cita: tipoCita }])
+    .insert([{
+      usuario_id: userId,
+      psicologo_id: 1,  // Asignado fijo por ahora
+      fecha_hora: fechaHora,
+      motivo,
+      estado: 'agendada',
+      tipo_cita: tipoCita
+    }])
+
   if (error) return alert('Error al programar cita: ' + error.message)
+
   alert('Cita programada correctamente.')
   document.getElementById('new-cita-form').reset()
   fetchCitas(userId)
