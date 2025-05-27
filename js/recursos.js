@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return
   }
 
-  // Mostrar nombre del paciente
+  // Obtener nombre y usuario_id
   const { data: perfil, error: perfilError } = await supabase
     .from('usuarios')
     .select('nombre, usuario_id')
@@ -21,12 +21,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     return
   }
 
+  // Mostrar nombre del usuario
   const nombreSpan = document.querySelector('.user-name')
   if (nombreSpan) {
     nombreSpan.textContent = `Hola, ${perfil.nombre}`
   }
 
-  // Lista simulada de recursos
+  // Cargar recursos simulados
   const recursos = [
     {
       titulo: 'Ejercicios de respiración consciente',
@@ -49,12 +50,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     list.appendChild(li)
   })
 
-  // Cierre de sesión real con Supabase
+  // Cerrar sesión real
   const logoutBtn = document.getElementById('logoutBtn')
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
       const confirmLogout = confirm('¿Deseas cerrar sesión?')
       if (!confirmLogout) return
+
       const { error } = await supabase.auth.signOut()
       if (error) {
         alert('Error al cerrar sesión: ' + error.message)
@@ -64,23 +66,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     })
   }
 
-  // Interceptar clic en botón de consentimiento desde el sidebar
+  // Interceptar clic en el botón de consentimiento del sidebar
   document.addEventListener('click', async (e) => {
     const target = e.target.closest('#consentBtn')
-    if (target) {
-      e.preventDefault()
-      const { data: yaFirmado } = await supabase
-        .from('consentimientos')
-        .select('consentimiento_id')
-        .eq('id_auth', user.id)
-        .maybeSingle()
+    if (!target) return
 
-      if (yaFirmado) {
-        alert('Ya has firmado el consentimiento. No es necesario volver a llenarlo.')
-        window.location.href = 'dashboard.html'
-      } else {
-        window.location.href = 'consentimiento.html'
-      }
+    e.preventDefault()
+
+    const { data: yaFirmado, error: consentError } = await supabase
+      .from('consentimientos')
+      .select('consentimiento_id')
+      .eq('id_auth', user.id)
+      .maybeSingle()
+
+    if (consentError) {
+      console.error('Error al verificar consentimiento:', consentError)
+      return
+    }
+
+    if (yaFirmado) {
+      alert('Ya has firmado el consentimiento. No es necesario volver a llenarlo.')
+      window.location.href = 'dashboard.html'
+    } else {
+      window.location.href = 'consentimiento.html'
     }
   })
 })

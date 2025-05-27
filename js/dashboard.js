@@ -2,37 +2,24 @@ import { supabase } from './supabase.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
   const {
-    data: { session },
-    error: sessionError
+    data: { session }
   } = await supabase.auth.getSession()
 
-  if (sessionError || !session) {
-    return window.location.href = 'login.html'
-  }
+  const user = session?.user
+  if (!user) return  // El control de redirección lo hace main.js
 
-  const id_auth = session.user.id
+  const id_auth = user.id
 
-  // Obtener usuario y su nombre
-  const { data: usuarioData, error: userErr } = await supabase
+  // Obtener usuario_id y nombre
+  const { data: usuarioData } = await supabase
     .from('usuarios')
     .select('usuario_id, nombre')
     .eq('id_auth', id_auth)
     .single()
 
-  if (userErr || !usuarioData) {
-    alert('Error al obtener el usuario.')
-    return
-  }
+  const usuario_id = usuarioData?.usuario_id
 
-  const usuario_id = usuarioData.usuario_id
-
-  // Mostrar nombre en encabezado
-  const nombreSpan = document.querySelector('.user-name')
-  if (nombreSpan && usuarioData.nombre) {
-    nombreSpan.textContent = `Hola, ${usuarioData.nombre}`
-  }
-
-  // Mostrar alerta visual si ya firmó consentimiento
+  // Mostrar alerta si ya firmó el consentimiento
   const { data: consentimientoRegistro } = await supabase
     .from('consentimientos')
     .select('consentimiento_id')
@@ -40,9 +27,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     .maybeSingle()
 
   const consentAlert = document.getElementById('consent-alert')
-  consentAlert.style.display = consentimientoRegistro ? 'block' : 'none'
+  if (consentAlert) {
+    consentAlert.style.display = consentimientoRegistro ? 'block' : 'none'
+  }
 
-  // Obtener próxima cita
+  // Próxima cita
   const { data: citas } = await supabase
     .from('citas')
     .select('*')
@@ -56,22 +45,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('therapist-name').innerText =
     nextCita ? 'Miguel Atilano' : ''
 
-  // Obtener sesiones
+  // Sesiones
   const { data: sesiones } = await supabase
     .from('sesiones')
     .select('*')
     .eq('usuario_id', usuario_id)
 
   document.getElementById('sessions-count').innerText =
-    sesiones ? `${sesiones.length} sesiones` : '0 sesiones'
+    sesiones?.length ? `${sesiones.length} sesiones` : '0 sesiones'
 
-  const emocional =
-    sesiones?.length && sesiones[sesiones.length - 1].avance
-      ? sesiones[sesiones.length - 1].avance
-      : 'No definido'
+  const emocional = sesiones?.[sesiones.length - 1]?.avance || 'No definido'
   document.getElementById('emotional-state').innerText = emocional
 
-  // Mostrar próximas citas
+  // Lista de próximas citas
   const upcomingList = document.getElementById('upcoming-list')
   upcomingList.innerHTML = ''
   citas.forEach(cita => {
@@ -80,7 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     upcomingList.appendChild(li)
   })
 
-  // Gráfica estática por ahora
+  // Gráfica de progreso (placeholder)
   const ctx = document.getElementById('progress-chart').getContext('2d')
   new Chart(ctx, {
     type: 'line',
@@ -89,36 +75,34 @@ document.addEventListener('DOMContentLoaded', async () => {
       datasets: [{
         label: 'Nivel emocional',
         data: [-1, 0, 1, 2, 0],
-        fill: false,
         borderColor: '#496b8a',
+        fill: false,
         tension: 0.2
       }]
     },
     options: {
-      scales: {
-        y: { beginAtZero: true }
-      }
+      scales: { y: { beginAtZero: true } }
     }
   })
 
-  // Protección al hacer clic en consentimiento
+  // Protección contra doble consentimiento
   document.addEventListener('click', async (e) => {
     const target = e.target.closest('#consentBtn')
-    if (!target) return
+    if (target) {
+      e.preventDefault()
 
-    e.preventDefault()
+      const { data: yaFirmado } = await supabase
+        .from('consentimientos')
+        .select('consentimiento_id')
+        .eq('id_auth', id_auth)
+        .maybeSingle()
 
-    const { data: yaFirmado } = await supabase
-      .from('consentimientos')
-      .select('consentimiento_id')
-      .eq('id_auth', id_auth)
-      .maybeSingle()
-
-    if (yaFirmado) {
-      alert('Ya has firmado el consentimiento. No es necesario volver a llenarlo.')
-      window.location.href = 'dashboard.html'
-    } else {
-      window.location.href = 'consentimiento.html'
+      if (yaFirmado) {
+        alert('Ya has firmado el consentimiento. No es necesario volver a llenarlo.')
+        window.location.href = 'dashboard.html'
+      } else {
+        window.location.href = 'consentimiento.html'
+      }
     }
   })
 })

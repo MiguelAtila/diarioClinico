@@ -12,41 +12,49 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Redirección según estado de sesión
   if (!user && privatePages.includes(page)) {
-    return (window.location.href = 'login.html')
+    window.location.href = 'login.html'
+    return
   }
 
   if (user && publicPages.includes(page)) {
-    return (window.location.href = 'dashboard.html')
+    window.location.href = 'dashboard.html'
+    return
   }
 
   // Mostrar nombre del usuario en el encabezado si existe .user-name
   if (user) {
-    const { data: perfil, error: perfilError } = await supabase
-      .from('usuarios')
-      .select('nombre')
-      .eq('id_auth', user.id)
-      .maybeSingle()
+    try {
+      const { data: perfil, error: perfilError } = await supabase
+        .from('usuarios')
+        .select('nombre')
+        .eq('id_auth', user.id)
+        .maybeSingle()
 
-    if (!perfilError && perfil?.nombre) {
-      const nombreSpan = document.querySelector('.user-name')
-      if (nombreSpan) {
-        nombreSpan.textContent = `Hola, ${perfil.nombre}`
+      if (!perfilError && perfil?.nombre) {
+        const nombreSpan = document.querySelector('.user-name')
+        if (nombreSpan) {
+          nombreSpan.textContent = `Hola, ${perfil.nombre}`
+        }
       }
+    } catch (err) {
+      console.error('Error obteniendo perfil para saludo:', err)
     }
   }
 
-  // Funcionalidad cerrar sesión
+  // ✅ Funcionalidad cerrar sesión con protección anti-doble clic
   const logoutBtn = document.getElementById('logoutBtn')
   if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      const confirmLogout = confirm('¿Deseas cerrar sesión?')
-      if (!confirmLogout) return
+    logoutBtn.addEventListener('click', async (e) => {
+      e.preventDefault()
+      if (!confirm('¿Deseas cerrar sesión?')) return
+
       const { error } = await supabase.auth.signOut()
       if (error) {
         alert('Error al cerrar sesión: ' + error.message)
       } else {
+        localStorage.clear()
         window.location.href = 'index.html'
       }
-    })
+    }, { once: true })  // <- esto evita que se dispare dos veces
   }
 })

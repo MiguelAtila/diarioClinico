@@ -1,6 +1,5 @@
 import { supabase } from './supabase.js'
 
-// Verificación al cargar la página
 window.addEventListener('DOMContentLoaded', async () => {
   const { data: sessionData } = await supabase.auth.getSession()
   const user = sessionData?.session?.user
@@ -28,33 +27,28 @@ window.addEventListener('DOMContentLoaded', async () => {
     return
   }
 
-  // Obtener nombre y apellidos del usuario
-  const { data: perfil, error } = await supabase
+  // Obtener perfil del usuario
+  const { data: perfil, error: perfilError } = await supabase
     .from('usuarios')
     .select('nombre, apellidos, usuario_id')
     .eq('id_auth', user.id)
     .single()
 
-  if (error || !perfil) {
-    console.error('Error al cargar datos del usuario:', error)
+  if (perfilError || !perfil) {
+    console.error('Error al cargar datos del usuario:', perfilError)
     return
   }
 
-  // Mostrar saludo personalizado
+  // Mostrar saludo y prellenar campos
   const nombreSpan = document.querySelector('.user-name')
-  if (nombreSpan) {
-    nombreSpan.textContent = `Hola, ${perfil.nombre}`
-  }
+  if (nombreSpan) nombreSpan.textContent = `Hola, ${perfil.nombre}`
 
-  // Prellenar campos del formulario
   document.getElementById('nombre_paciente').value = `${perfil.nombre} ${perfil.apellidos}`
   document.getElementById('fecha').valueAsDate = new Date()
-
-  // Guardar ID para usarlo al enviar
   document.getElementById('consent-form').dataset.usuarioId = perfil.usuario_id
 })
 
-// Habilitar botón solo si se autoriza
+// Control de botón enviar
 const btnEnviar = document.getElementById('btnEnviar')
 const msg = document.getElementById('noAutorizadoMsg')
 btnEnviar.disabled = true
@@ -72,7 +66,7 @@ document.querySelectorAll('input[name="autorizacion"]').forEach((radio) => {
   })
 })
 
-// Enviar consentimiento
+// Guardar consentimiento
 document.getElementById('consent-form').addEventListener('submit', async (e) => {
   e.preventDefault()
 
@@ -88,7 +82,7 @@ document.getElementById('consent-form').addEventListener('submit', async (e) => 
 
   const usuario_id = e.target.dataset.usuarioId
 
-  // Doble verificación por seguridad
+  // Verificación final por seguridad
   const { data: yaFirmado } = await supabase
     .from('consentimientos')
     .select('consentimiento_id')

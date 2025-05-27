@@ -1,32 +1,27 @@
 import { supabase } from './supabase.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const {
-    data: { session },
-    error: sessionError
-  } = await supabase.auth.getSession()
+  const { data: sessionData } = await supabase.auth.getSession()
+  const user = sessionData?.session?.user
+  if (!user) return  // Redirección se maneja en main.js
 
-  if (sessionError || !session) {
-    return window.location.href = 'login.html'
-  }
+  const id_auth = user.id
 
-  const id_auth = session.user.id
-
-  // Obtener datos del usuario
-  const { data: usuarioData, error: userFetchError } = await supabase
+  // Obtener usuario y su nombre
+  const { data: usuarioData } = await supabase
     .from('usuarios')
     .select('usuario_id, nombre')
     .eq('id_auth', id_auth)
     .single()
 
-  if (userFetchError || !usuarioData) {
+  if (!usuarioData) {
     alert('Error al obtener información del usuario.')
     return
   }
 
   const usuario_id = usuarioData.usuario_id
 
-  // Mostrar saludo personalizado
+  // Mostrar nombre en encabezado
   const nombreSpan = document.querySelector('.user-name')
   if (nombreSpan && usuarioData.nombre) {
     nombreSpan.textContent = `Hola, ${usuarioData.nombre}`
@@ -52,21 +47,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       window.location.href = 'consentimiento.html'
     }
   })
-
-  // Cerrar sesión si existe botón
-  const logoutBtn = document.getElementById('logoutBtn')
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      const confirmLogout = confirm('¿Deseas cerrar sesión?')
-      if (!confirmLogout) return
-      const { error } = await supabase.auth.signOut()
-      if (error) {
-        alert('Error al cerrar sesión: ' + error.message)
-      } else {
-        window.location.href = 'index.html'
-      }
-    })
-  }
 
   // Cargar citas
   await fetchCitas(usuario_id)
@@ -99,6 +79,7 @@ async function fetchCitas(usuario_id) {
 function displayCitas(citas) {
   const list = document.getElementById('citas-list')
   list.innerHTML = ''
+
   if (!citas.length) {
     list.innerHTML = '<p>No tienes citas programadas.</p>'
     return

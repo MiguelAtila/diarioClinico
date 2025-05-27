@@ -2,7 +2,7 @@ import { supabase } from './supabase.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Verificar sesión del usuario
-  const { data: sessionData, error } = await supabase.auth.getSession()
+  const { data: sessionData } = await supabase.auth.getSession()
   const user = sessionData?.session?.user
 
   if (!user) {
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Obtener nombre del usuario
-  const { data: perfil, error: perfilError } = await supabase
+  const { data: perfil } = await supabase
     .from('usuarios')
     .select('nombre')
     .eq('id_auth', user.id)
@@ -61,19 +61,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     container.appendChild(card)
   })
 
-  // Cerrar sesión correctamente
-  const logoutBtn = document.getElementById('logoutBtn')
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      const confirmLogout = confirm('¿Deseas cerrar sesión?')
-      if (!confirmLogout) return
+  // Cierre de sesión (si NO usas main.js)
+  // const logoutBtn = document.getElementById('logoutBtn')
+  // if (logoutBtn) {
+  //   logoutBtn.addEventListener('click', async () => {
+  //     const confirmLogout = confirm('¿Deseas cerrar sesión?')
+  //     if (!confirmLogout) return
 
-      const { error } = await supabase.auth.signOut()
-      if (error) {
-        alert('Error al cerrar sesión: ' + error.message)
-      } else {
-        window.location.href = 'index.html'
-      }
-    })
-  }
+  //     const { error } = await supabase.auth.signOut()
+  //     if (error) {
+  //       alert('Error al cerrar sesión: ' + error.message)
+  //     } else {
+  //       window.location.href = 'index.html'
+  //     }
+  //   })
+  // }
 })
