@@ -46,11 +46,35 @@ document.addEventListener('DOMContentLoaded', async () => {
   const list = document.getElementById('recursos-list')
   recursos.forEach(r => {
     const li = document.createElement('li')
-    li.innerHTML = `<a href="${r.enlace}" target="_blank">${r.titulo}</a>`
+
+    // Si es un enlace de YouTube, mostrar embed
+    if (r.enlace.includes('youtube.com') || r.enlace.includes('youtu.be')) {
+      const videoId = extraerVideoId(r.enlace)
+      li.innerHTML = `
+        <p><strong>${r.titulo}</strong></p>
+        <div class="video-container">
+          <iframe 
+            src="https://www.youtube.com/embed/${videoId}" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
+        </div>
+      `
+    } else {
+      li.innerHTML = `<a href="${r.enlace}" target="_blank">${r.titulo}</a>`
+    }
+
     list.appendChild(li)
   })
 
-  // Cerrar sesión real
+  function extraerVideoId(url) {
+    const regExp = /^.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
+    const match = url.match(regExp)
+    return match && match[1].length === 11 ? match[1] : null
+  }
+
+  // Cierre de sesión real
   const logoutBtn = document.getElementById('logoutBtn')
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
