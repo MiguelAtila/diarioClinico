@@ -1,6 +1,8 @@
 import { supabase } from './supabase.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
+
+  // Verificar sesión del usuario
   const { data: sessionData, error } = await supabase.auth.getSession()
   const user = sessionData?.session?.user
 
