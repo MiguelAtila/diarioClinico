@@ -1,5 +1,29 @@
-// js/sesiones.js
-document.addEventListener('DOMContentLoaded', () => {
+import { supabase } from './supabase.js'
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const { data: sessionData, error } = await supabase.auth.getSession()
+  const user = sessionData?.session?.user
+
+  if (!user) {
+    window.location.href = 'login.html'
+    return
+  }
+
+  // Obtener nombre del usuario
+  const { data: perfil, error: perfilError } = await supabase
+    .from('usuarios')
+    .select('nombre')
+    .eq('id_auth', user.id)
+    .single()
+
+  if (perfil?.nombre) {
+    const nombreSpan = document.querySelector('.user-name')
+    if (nombreSpan) {
+      nombreSpan.textContent = `Hola, ${perfil.nombre}`
+    }
+  }
+
+  // Simulación de sesiones (puedes reemplazar con fetch real en el futuro)
   const sessions = [
     {
       fecha_sesion: '2025-04-10 10:00',

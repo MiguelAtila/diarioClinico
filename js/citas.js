@@ -1,4 +1,3 @@
-// js/citas.js
 import { supabase } from './supabase.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -13,9 +12,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const id_auth = session.user.id
 
+  // Obtener datos del usuario
   const { data: usuarioData, error: userFetchError } = await supabase
     .from('usuarios')
-    .select('usuario_id')
+    .select('usuario_id, nombre')
     .eq('id_auth', id_auth)
     .single()
 
@@ -25,6 +25,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   const usuario_id = usuarioData.usuario_id
+
+  // Mostrar saludo personalizado
+  const nombreSpan = document.querySelector('.user-name')
+  if (nombreSpan && usuarioData.nombre) {
+    nombreSpan.textContent = `Hola, ${usuarioData.nombre}`
+  }
 
   await fetchCitas(usuario_id)
 

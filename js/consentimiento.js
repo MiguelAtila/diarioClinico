@@ -28,7 +28,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Obtener nombre y apellidos del usuario para prellenar
+  // Obtener nombre y apellidos del usuario para prellenar y saludo
   const { data: perfil, error } = await supabase
     .from('usuarios')
     .select('nombre, apellidos')
@@ -40,6 +40,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  // Mostrar saludo personalizado
+  const nombreSpan = document.querySelector('.user-name');
+  if (nombreSpan) {
+    nombreSpan.textContent = `Hola, ${perfil.nombre}`;
+  }
+
+  // Prellenar campos
   document.getElementById('nombre_paciente').value = `${perfil.nombre} ${perfil.apellidos}`;
   document.getElementById('fecha').valueAsDate = new Date();
 });
