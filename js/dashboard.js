@@ -33,14 +33,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Verificar si ya firmó el consentimiento (para mostrar alerta visual en dashboard)
-  const { data: consentimientoCheck } = await supabase
+  const { data: consentimientoRegistro } = await supabase
     .from('consentimientos')
     .select('consentimiento_id')
     .eq('id_auth', id_auth)
     .maybeSingle()
 
   const consentAlert = document.getElementById('consent-alert')
-  if (consentimientoCheck) {
+  if (consentimientoRegistro) {
     if (consentAlert) consentAlert.style.display = 'block'
   } else {
     if (consentAlert) consentAlert.style.display = 'none'
@@ -108,13 +108,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (target) {
       e.preventDefault()
 
-      const { data: consentimientoCheck } = await supabase
+      const { data: yaFirmado } = await supabase
         .from('consentimientos')
         .select('consentimiento_id')
-        .eq('usuario_id', usuario_id)
+        .eq('id_auth', id_auth)
         .maybeSingle()
 
-      if (consentimientoCheck) {
+      if (yaFirmado) {
         alert('Ya has firmado el consentimiento. No es necesario volver a llenarlo.')
         window.location.href = 'dashboard.html'
       } else {
