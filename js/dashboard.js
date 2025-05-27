@@ -32,21 +32,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     nombreSpan.textContent = `Hola, ${usuarioData.nombre}`
   }
 
-  // Verificar si ya firmó el consentimiento
+  // Verificar si ya firmó el consentimiento (para mostrar/ocultar mensaje visual)
   const { data: consentimiento } = await supabase
     .from('consentimientos')
     .select('consentimiento_id')
     .eq('usuario_id', usuario_id)
     .maybeSingle()
 
-  const consentBtn = document.getElementById('consentBtn')
   const consentAlert = document.getElementById('consent-alert')
-
   if (consentimiento) {
-    if (consentBtn) consentBtn.style.display = 'none'
     if (consentAlert) consentAlert.style.display = 'block'
   } else {
-    if (consentBtn) consentBtn.style.display = 'inline-block'
     if (consentAlert) consentAlert.style.display = 'none'
   }
 
@@ -105,4 +101,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     },
     options: { scales: { y: { beginAtZero: true } } }
   })
+
+  // Validación al hacer clic en el enlace de consentimiento
+  const consentBtn = document.getElementById('consentBtn')
+  if (consentBtn) {
+    consentBtn.addEventListener('click', async (e) => {
+      e.preventDefault()
+
+      const { data: consentimientoCheck } = await supabase
+        .from('consentimientos')
+        .select('consentimiento_id')
+        .eq('usuario_id', usuario_id)
+        .maybeSingle()
+
+      if (consentimientoCheck) {
+        alert('Ya has firmado el consentimiento. No es necesario volver a llenarlo.')
+        window.location.href = 'dashboard.html'
+      } else {
+        window.location.href = 'consentimiento.html'
+      }
+    })
+  }
 })
