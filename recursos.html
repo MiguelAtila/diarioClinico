@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recursos – Diario Clínico</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+  <header>
+    <h1>Diario Clínico</h1>
+    <nav class="user-nav">
+      <span class="user-name">Hola, Paciente</span>
+      <button id="logoutBtn">Cerrar sesión</button>
+    </nav>
+  </header>
+
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <ul>
+        <li><a href="dashboard.html">📊 Dashboard</a></li>
+        <li><a href="citas.html">📅 Mis Citas</a></li>
+        <li><a href="sesiones.html">📖 Historial</a></li>
+        <li><a href="#" id="consentBtn">✅ Consentimiento</a></li>
+        <li><a href="recursos.html" class="active">📚 Recursos</a></li>
+      </ul>
+    </aside>
+
+    <main class="main-content">
+      <section class="resources-section">
+        <h2>Materiales y Recursos de Apoyo</h2>
+        <ul id="recursos-list">
+          <!-- Los recursos se insertarán aquí -->
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <p>© 2025 Diario Clínico</p>
+  </footer>
+
+  <script type="module" src="js/supabase.js"></script>
+  <script type="module" src="js/recursos.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
