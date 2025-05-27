@@ -6,6 +6,19 @@
   <title>Dashboard – Diario Clínico</title>
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/dashboard.css" />
+  <style>
+    .alert {
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .alert.success {
+      background-color: #e7f7ec;
+      color: #276738;
+      border: 1px solid #a3d9a5;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -22,7 +35,7 @@
         <li><a href="dashboard.html" class="active">📊 Dashboard</a></li>
         <li><a href="citas.html">📅 Mis Citas</a></li>
         <li><a href="sesiones.html">📖 Historial</a></li>
-        <li><a href="consentimiento.html">✅ Consentimiento</a></li>
+        <li><a href="consentimiento.html" id="consentBtn">✅ Consentimiento</a></li>
         <li><a href="recursos.html">📚 Recursos</a></li>
       </ul>
     </aside>
@@ -44,6 +57,10 @@
         </div>
       </section>
 
+      <section id="consent-alert" class="alert success" style="display: none;">
+        ✅ Ya has firmado el consentimiento informado. Gracias por tu colaboración.
+      </section>
+
       <section class="upcoming">
         <h2>Próximas Citas</h2>
         <ul id="upcoming-list"></ul>
@@ -60,7 +77,6 @@
     <p>© 2025 Diario Clínico</p>
   </footer>
 
-  <!-- Chart.js + Supabase + Dashboard + routing -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script type="module" src="js/supabase.js"></script>
   <script type="module" src="js/dashboard.js"></script>

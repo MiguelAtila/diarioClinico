@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Obtener usuario_id desde tabla usuarios
   const { data: usuarioData, error: userErr } = await supabase
     .from('usuarios')
-    .select('usuario_id')
+    .select('usuario_id, nombre')
     .eq('id_auth', id_auth)
     .single()
 
@@ -25,6 +25,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   const usuario_id = usuarioData.usuario_id
+
+  // Mostrar nombre en encabezado
+  const nombreSpan = document.querySelector('.user-name')
+  if (nombreSpan && usuarioData.nombre) {
+    nombreSpan.textContent = `Hola, ${usuarioData.nombre}`
+  }
+
+  // Verificar si ya firmó el consentimiento
+  const { data: consentimiento } = await supabase
+    .from('consentimientos')
+    .select('consentimiento_id')
+    .eq('usuario_id', usuario_id)
+    .maybeSingle()
+
+  const consentBtn = document.getElementById('consentBtn')
+  const consentAlert = document.getElementById('consent-alert')
+
+  if (consentimiento) {
+    if (consentBtn) consentBtn.style.display = 'none'
+    if (consentAlert) consentAlert.style.display = 'block'
+  } else {
+    if (consentBtn) consentBtn.style.display = 'inline-block'
+    if (consentAlert) consentAlert.style.display = 'none'
+  }
 
   // Obtener próxima cita
   const { data: citas } = await supabase
@@ -49,14 +73,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('sessions-count').innerText =
     sesiones ? `${sesiones.length} sesiones` : '0 sesiones'
 
-  // Estado emocional (puede basarse en última sesión si se tiene)
+  // Estado emocional (basado en última sesión)
   const emocional =
     sesiones?.length && sesiones[sesiones.length - 1].avance
       ? sesiones[sesiones.length - 1].avance
       : 'No definido'
   document.getElementById('emotional-state').innerText = emocional
 
-  // Lista de citas próximas
+  // Lista de próximas citas
   const upcomingList = document.getElementById('upcoming-list')
   upcomingList.innerHTML = ''
   citas.forEach(cita => {
@@ -73,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May'],
       datasets: [{
         label: 'Nivel emocional',
-        data: [-1, 0, 1, 2, 0], // Placeholder
+        data: [-1, 0, 1, 2, 0],
         fill: false,
         borderColor: '#496b8a',
         tension: 0.2

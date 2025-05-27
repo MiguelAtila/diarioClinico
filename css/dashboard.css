@@ -138,3 +138,15 @@ span.active {
   color: green;
   font-weight: bold;
 }
+
+.alert {
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+  font-weight: bold;
+}
+.alert.success {
+  background-color: #e7f7ec;
+  color: #276738;
+  border: 1px solid #a3d9a5;
+}
