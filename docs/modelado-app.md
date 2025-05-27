@@ -132,7 +132,7 @@
 - No se permite eliminar penalizaciones activas.
 
 ## Diagrama Relacional
-![DiagramaBd](./assets/diagramaBd3.png)
+![DiagramaBd](/assets/diagramaBd3.png)
 
 ## Modelo de Datos Supabase
-![modeladoSupabase](./assets/capturaSupabase.png)
+![modeladoSupabase](/assets/capturaSupabase.png)
