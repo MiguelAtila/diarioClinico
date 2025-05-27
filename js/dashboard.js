@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     nombreSpan.textContent = `Hola, ${usuarioData.nombre}`
   }
 
-  // Verificar si ya firmó el consentimiento (para mostrar/ocultar mensaje visual)
+  // Verificar si ya firmó el consentimiento (para mostrar alerta visual en dashboard)
   const { data: consentimiento } = await supabase
     .from('consentimientos')
     .select('consentimiento_id')
@@ -102,10 +102,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     options: { scales: { y: { beginAtZero: true } } }
   })
 
-  // Validación al hacer clic en el enlace de consentimiento
-  const consentBtn = document.getElementById('consentBtn')
-  if (consentBtn) {
-    consentBtn.addEventListener('click', async (e) => {
+  // Interceptar clic en el botón de consentimiento en el sidebar
+  document.addEventListener('click', async (e) => {
+    const target = e.target.closest('#consentBtn')
+    if (target) {
       e.preventDefault()
 
       const { data: consentimientoCheck } = await supabase
@@ -120,6 +120,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       } else {
         window.location.href = 'consentimiento.html'
       }
-    })
-  }
+    }
+  })
 })
