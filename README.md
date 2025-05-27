@@ -39,9 +39,9 @@ Este proyecto integra:
 
 | Archivo | Descripción |
 |--------|-------------|
-| [prompt.md](./prompt.md) | Algoritmo en lenguaje natural del funcionamiento y creación de la app |
-| [mi-app.md](./mi-app.md) | Descripción conceptual de la app |
-| [modelado-app.md](./modelado-app.md) | Modelado Entidad–Relación y estructura relacional |
+| [prompt.md](/docs/prompt.md) | Algoritmo en lenguaje natural del funcionamiento y creación de la app |
+| [mi-app.md](/docs/mi-app.md) | Descripción conceptual de la app |
+| [modelado-app.md](/docs/modelado-app.md) | Modelado Entidad–Relación y estructura relacional |
 
 ---
 
