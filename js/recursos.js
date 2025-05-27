@@ -53,8 +53,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       enlace: 'assets/recursos/autoestima.pdf'
     },
     {
-      titulo: 'Video: Cómo manejar la ansiedad',
-      enlace: 'https://www.youtube.com/watch?v=EjVzLcs2LRI'
+      titulo: 'Video: ¿Qué es la ansiedad? | APA',
+      enlace: 'https://www.youtube.com/watch?v=3iXjHf12ed4'
     }
   ]
 
