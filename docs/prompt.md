@@ -51,7 +51,7 @@
 	8.	Cierre de Sesión:
 	☑️	El usuario hace clic en Cerrar Sesión.
 	☑️	El sistema invalida el token de autenticación y redirige a la pantalla de inicio.
-	9.	Fin
+	9.	Fin.
 
 # Diagrama de Flujo del Algoritmo
 ![Diagrama](/assets/diagramaMer.png)
