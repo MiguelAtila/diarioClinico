@@ -1,6 +1,6 @@
 import { supabase } from './supabase.js';
 
-// 🚫 Proteger acceso si ya firmó consentimiento
+// Verificación al cargar la página
 window.addEventListener('DOMContentLoaded', async () => {
   const { data: sessionData } = await supabase.auth.getSession();
   const user = sessionData?.session?.user;
@@ -11,20 +11,24 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Verificar si ya firmó
-  const { data: consentimientoFirmado } = await supabase
+  // Verificar si ya firmó el consentimiento
+  const { data: yaFirmado, error: checkError } = await supabase
     .from('consentimientos')
     .select('consentimiento_id')
     .eq('id_auth', user.id)
     .maybeSingle();
 
-  if (consentimientoFirmado) {
+  if (checkError) {
+    console.error('Error al verificar consentimiento:', checkError);
+  }
+
+  if (yaFirmado) {
     alert('Ya has firmado el consentimiento informado. No es necesario volver a llenarlo.');
     window.location.href = 'dashboard.html';
     return;
   }
 
-  // Obtener nombre y apellidos del usuario
+  // Obtener nombre y apellidos del usuario para prellenar
   const { data: perfil, error } = await supabase
     .from('usuarios')
     .select('nombre, apellidos')
@@ -36,7 +40,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Prellenar campos
   document.getElementById('nombre_paciente').value = `${perfil.nombre} ${perfil.apellidos}`;
   document.getElementById('fecha').valueAsDate = new Date();
 });
@@ -73,6 +76,7 @@ document.getElementById('consent-form').addEventListener('submit', async (e) => 
     return;
   }
 
+  // Validar si ya firmó (extra por seguridad)
   const { data: yaFirmado } = await supabase
     .from('consentimientos')
     .select('consentimiento_id')
@@ -81,6 +85,7 @@ document.getElementById('consent-form').addEventListener('submit', async (e) => 
 
   if (yaFirmado) {
     alert('Este consentimiento ya ha sido registrado.');
+    window.location.href = 'dashboard.html';
     return;
   }
 
