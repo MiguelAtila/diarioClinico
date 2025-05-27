@@ -25,6 +25,15 @@
     .form-group label {
       font-weight: bold;
     }
+    input[readonly] {
+      background-color: #f0f0f0;
+      cursor: not-allowed;
+    }
+    #noAutorizadoMsg {
+      color: red;
+      display: none;
+      margin-top: 0.5rem;
+    }
     @media screen and (max-width: 768px) {
       .consent-grid {
         flex-direction: column;
@@ -77,6 +86,7 @@
         <p>Con base en lo anterior:</p>
         <label><input type="radio" name="autorizacion" value="autorizo" required /> Autorizo voluntariamente la intervención psicológica.</label><br/>
         <label><input type="radio" name="autorizacion" value="no_autorizo" /> No autorizo y declino recibir el servicio.</label>
+        <p id="noAutorizadoMsg">No puedes enviar el consentimiento si no autorizas la intervención.</p>
       </section>
 
       <!-- Sección inferior en columnas -->
@@ -84,15 +94,15 @@
         <div class="consent-column">
           <div class="form-group">
             <label>Nombre del paciente:</label>
-            <input type="text" name="nombre_paciente" required />
+            <input type="text" name="nombre_paciente" id="nombre_paciente" readonly />
           </div>
           <div class="form-group">
             <label>Edad:</label>
-            <input type="number" name="edad" required />
+            <input type="number" name="edad" id="edad" />
           </div>
           <div class="form-group">
             <label>Fecha:</label>
-            <input type="date" name="fecha" required />
+            <input type="date" name="fecha" id="fecha" readonly />
           </div>
         </div>
 
@@ -113,7 +123,7 @@
 
         <div class="form-group" style="width: 100%;">
           <p class="note">Este consentimiento puede ser modificado o revocado por el paciente en cualquier momento, notificándolo por escrito.</p>
-          <button type="submit" class="btn primary">Enviar Consentimiento</button>
+          <button type="submit" class="btn primary" id="btnEnviar">Enviar Consentimiento</button>
           <a href="dashboard.html" class="btn secondary">Cancelar</a>
         </div>
       </form>
@@ -125,7 +135,7 @@
   </footer>
 
   <script type="module" src="js/supabase.js"></script>
-  <script src="js/consentimiento.js"></script>
+  <script src="js/consentimiento.js" type="module"></script>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>
