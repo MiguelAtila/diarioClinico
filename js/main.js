@@ -2,22 +2,37 @@
 import { supabase } from './supabase.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const session = await supabase.auth.getSession()
-  const user = session.data?.session?.user || null
+  const { data, error } = await supabase.auth.getSession()
+  const session = data?.session || null
+  const user = session?.user || null
   const page = window.location.pathname.split('/').pop()
 
   const publicPages = ['index.html', 'login.html', 'registro.html']
-  const privatePages = ['dashboard.html', 'citas.html', 'sesiones.html', 'consentimiento.html']
+  const privatePages = ['dashboard.html', 'citas.html', 'sesiones.html', 'consentimiento.html', 'recursos.html']
 
   // Redirección según estado de sesión
   if (!user && privatePages.includes(page)) {
-    window.location.href = 'login.html'
-    return
+    return (window.location.href = 'login.html')
   }
 
   if (user && publicPages.includes(page)) {
-    window.location.href = 'dashboard.html'
-    return
+    return (window.location.href = 'dashboard.html')
+  }
+
+  // Mostrar nombre del usuario en el encabezado si existe .user-name
+  if (user) {
+    const { data: perfil, error: perfilError } = await supabase
+      .from('usuarios')
+      .select('nombre')
+      .eq('id_auth', user.id)
+      .maybeSingle()
+
+    if (!perfilError && perfil?.nombre) {
+      const nombreSpan = document.querySelector('.user-name')
+      if (nombreSpan) {
+        nombreSpan.textContent = `Hola, ${perfil.nombre}`
+      }
+    }
   }
 
   // Funcionalidad cerrar sesión

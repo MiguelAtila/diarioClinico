@@ -32,6 +32,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     nombreSpan.textContent = `Hola, ${usuarioData.nombre}`
   }
 
+  // Protección contra doble consentimiento
+  document.addEventListener('click', async (e) => {
+    const target = e.target.closest('#consentBtn')
+    if (!target) return
+
+    e.preventDefault()
+
+    const { data: yaFirmado } = await supabase
+      .from('consentimientos')
+      .select('consentimiento_id')
+      .eq('id_auth', id_auth)
+      .maybeSingle()
+
+    if (yaFirmado) {
+      alert('Ya has firmado el consentimiento. No es necesario volver a llenarlo.')
+      window.location.href = 'dashboard.html'
+    } else {
+      window.location.href = 'consentimiento.html'
+    }
+  })
+
+  // Cerrar sesión si existe botón
+  const logoutBtn = document.getElementById('logoutBtn')
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      const confirmLogout = confirm('¿Deseas cerrar sesión?')
+      if (!confirmLogout) return
+      const { error } = await supabase.auth.signOut()
+      if (error) {
+        alert('Error al cerrar sesión: ' + error.message)
+      } else {
+        window.location.href = 'index.html'
+      }
+    })
+  }
+
+  // Cargar citas
   await fetchCitas(usuario_id)
 
   document.getElementById('new-cita-form')

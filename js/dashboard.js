@@ -3,16 +3,16 @@ import { supabase } from './supabase.js'
 document.addEventListener('DOMContentLoaded', async () => {
   const {
     data: { session },
-    error
+    error: sessionError
   } = await supabase.auth.getSession()
 
-  if (error || !session) {
+  if (sessionError || !session) {
     return window.location.href = 'login.html'
   }
 
   const id_auth = session.user.id
 
-  // Obtener usuario_id desde tabla usuarios
+  // Obtener usuario y su nombre
   const { data: usuarioData, error: userErr } = await supabase
     .from('usuarios')
     .select('usuario_id, nombre')
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     nombreSpan.textContent = `Hola, ${usuarioData.nombre}`
   }
 
-  // Verificar si ya firmó el consentimiento (para mostrar alerta visual en dashboard)
+  // Mostrar alerta visual si ya firmó consentimiento
   const { data: consentimientoRegistro } = await supabase
     .from('consentimientos')
     .select('consentimiento_id')
@@ -40,11 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     .maybeSingle()
 
   const consentAlert = document.getElementById('consent-alert')
-  if (consentimientoRegistro) {
-    if (consentAlert) consentAlert.style.display = 'block'
-  } else {
-    if (consentAlert) consentAlert.style.display = 'none'
-  }
+  consentAlert.style.display = consentimientoRegistro ? 'block' : 'none'
 
   // Obtener próxima cita
   const { data: citas } = await supabase
@@ -60,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('therapist-name').innerText =
     nextCita ? 'Miguel Atilano' : ''
 
-  // Obtener cantidad de sesiones
+  // Obtener sesiones
   const { data: sesiones } = await supabase
     .from('sesiones')
     .select('*')
@@ -69,14 +65,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('sessions-count').innerText =
     sesiones ? `${sesiones.length} sesiones` : '0 sesiones'
 
-  // Estado emocional (basado en última sesión)
   const emocional =
     sesiones?.length && sesiones[sesiones.length - 1].avance
       ? sesiones[sesiones.length - 1].avance
       : 'No definido'
   document.getElementById('emotional-state').innerText = emocional
 
-  // Lista de próximas citas
+  // Mostrar próximas citas
   const upcomingList = document.getElementById('upcoming-list')
   upcomingList.innerHTML = ''
   citas.forEach(cita => {
@@ -99,27 +94,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         tension: 0.2
       }]
     },
-    options: { scales: { y: { beginAtZero: true } } }
+    options: {
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
   })
 
-  // Interceptar clic en el botón de consentimiento en el sidebar
+  // Protección al hacer clic en consentimiento
   document.addEventListener('click', async (e) => {
     const target = e.target.closest('#consentBtn')
-    if (target) {
-      e.preventDefault()
+    if (!target) return
 
-      const { data: yaFirmado } = await supabase
-        .from('consentimientos')
-        .select('consentimiento_id')
-        .eq('id_auth', id_auth)
-        .maybeSingle()
+    e.preventDefault()
 
-      if (yaFirmado) {
-        alert('Ya has firmado el consentimiento. No es necesario volver a llenarlo.')
-        window.location.href = 'dashboard.html'
-      } else {
-        window.location.href = 'consentimiento.html'
-      }
+    const { data: yaFirmado } = await supabase
+      .from('consentimientos')
+      .select('consentimiento_id')
+      .eq('id_auth', id_auth)
+      .maybeSingle()
+
+    if (yaFirmado) {
+      alert('Ya has firmado el consentimiento. No es necesario volver a llenarlo.')
+      window.location.href = 'dashboard.html'
+    } else {
+      window.location.href = 'consentimiento.html'
     }
   })
 })

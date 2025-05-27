@@ -1,7 +1,6 @@
 import { supabase } from './supabase.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
-
   // Verificar sesión del usuario
   const { data: sessionData, error } = await supabase.auth.getSession()
   const user = sessionData?.session?.user
@@ -43,6 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   ]
 
+  // Renderizar las tarjetas de sesión
   const container = document.getElementById('sessions-list')
   sessions.forEach(s => {
     const card = document.createElement('div')
@@ -61,6 +61,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     container.appendChild(card)
   })
 
-  document.getElementById('logoutBtn')
-    .addEventListener('click', () => location.href = 'index.html')
+  // Cerrar sesión correctamente
+  const logoutBtn = document.getElementById('logoutBtn')
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      const confirmLogout = confirm('¿Deseas cerrar sesión?')
+      if (!confirmLogout) return
+
+      const { error } = await supabase.auth.signOut()
+      if (error) {
+        alert('Error al cerrar sesión: ' + error.message)
+      } else {
+        window.location.href = 'index.html'
+      }
+    })
+  }
 })
