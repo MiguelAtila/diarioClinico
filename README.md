@@ -62,7 +62,7 @@ Este proyecto integra:
 ✅ Reglas de negocio establecidas  
 ✅ Diagrama relacional con relaciones 1:M  
 ✅ Despliegue inicial en GitHub Pages  
-🚧 Pendiente: Interfaz funcional conectada a Supabase (backend)
+🚧 Parcial: Interfaz funcional conectada a Supabase (backend)
 
 ---
 
