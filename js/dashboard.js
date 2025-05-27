@@ -33,10 +33,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Verificar si ya firmó el consentimiento (para mostrar alerta visual en dashboard)
-  const { data: consentimiento } = await supabase
+  const { data: consentimientoCheck } = await supabase
     .from('consentimientos')
     .select('consentimiento_id')
-    .eq('usuario_id', usuario_id)
+    .eq('id_auth', id_auth)
     .maybeSingle()
 
   const consentAlert = document.getElementById('consent-alert')
