@@ -1,7 +1,7 @@
 import { supabase } from './supabase.js';
 
 window.addEventListener('DOMContentLoaded', async () => {
-  const { data: sessionData } = await supabase.auth.getSession();
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
   const user = sessionData?.session?.user;
 
   if (!user) {
@@ -10,36 +10,56 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  // Buscar usuario_id del paciente desde tabla usuarios
-  const { data: perfil, error } = await supabase
+  // Obtener usuario_id desde la tabla usuarios
+  const { data: usuario, error: usuarioError } = await supabase
     .from('usuarios')
     .select('usuario_id, nombre, apellidos')
     .eq('id_auth', user.id)
     .single();
 
-  if (error || !perfil) {
-    console.error('Error al cargar datos del usuario:', error);
+  if (usuarioError || !usuario) {
+    console.error('No se pudo obtener el usuario:', usuarioError);
+    alert('Error al validar usuario.');
+    window.location.href = 'dashboard.html';
     return;
   }
 
-  const usuario_id = perfil.usuario_id;
+  const usuario_id = usuario.usuario_id;
 
-  // Verificar si ya existe consentimiento firmado
-  const { data: yaFirmado } = await supabase
+  // Verificar si ya hay consentimiento firmado
+  const { data: consentimiento } = await supabase
     .from('consentimientos')
     .select('consentimiento_id')
     .eq('usuario_id', usuario_id)
     .maybeSingle();
 
-  if (yaFirmado) {
-    alert('Ya has firmado el consentimiento. No es necesario volver a llenarlo.');
+  if (consentimiento) {
+    alert('Ya has firmado el consentimiento. Serás redirigido al dashboard.');
     window.location.href = 'dashboard.html';
     return;
   }
 
-  // Prellenar campos
-  document.getElementById('nombre_paciente').value = `${perfil.nombre} ${perfil.apellidos}`;
+  // Si no hay consentimiento, rellenar campos
+  document.getElementById('nombre_paciente').value = `${usuario.nombre} ${usuario.apellidos}`;
   document.getElementById('fecha').valueAsDate = new Date();
+
+  // Habilitar botón solo si se autoriza
+  const btnEnviar = document.getElementById('btnEnviar');
+  const msg = document.getElementById('noAutorizadoMsg');
+  btnEnviar.disabled = true;
+
+  document.querySelectorAll('input[name="autorizacion"]').forEach((radio) => {
+    radio.addEventListener('change', () => {
+      const autorizado = document.querySelector('input[name="autorizacion"]:checked')?.value;
+      if (autorizado === 'autorizo') {
+        btnEnviar.disabled = false;
+        msg.style.display = 'none';
+      } else {
+        btnEnviar.disabled = true;
+        msg.style.display = 'block';
+      }
+    });
+  });
 
   // Enviar consentimiento
   document.getElementById('consent-form').addEventListener('submit', async (e) => {
@@ -66,23 +86,5 @@ window.addEventListener('DOMContentLoaded', async () => {
       alert('Consentimiento registrado con éxito.');
       window.location.href = 'dashboard.html';
     }
-  });
-
-  // Habilitar botón solo si se autoriza
-  const btnEnviar = document.getElementById('btnEnviar');
-  const msg = document.getElementById('noAutorizadoMsg');
-  btnEnviar.disabled = true;
-
-  document.querySelectorAll('input[name="autorizacion"]').forEach((radio) => {
-    radio.addEventListener('change', () => {
-      const autorizado = document.querySelector('input[name="autorizacion"]:checked')?.value;
-      if (autorizado === 'autorizo') {
-        btnEnviar.disabled = false;
-        msg.style.display = 'none';
-      } else {
-        btnEnviar.disabled = true;
-        msg.style.display = 'block';
-      }
-    });
   });
 });
