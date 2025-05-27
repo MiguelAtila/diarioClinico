@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     .maybeSingle()
 
   const consentAlert = document.getElementById('consent-alert')
-  if (consentimiento) {
+  if (consentimientoCheck) {
     if (consentAlert) consentAlert.style.display = 'block'
   } else {
     if (consentAlert) consentAlert.style.display = 'none'
