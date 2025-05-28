@@ -29,7 +29,7 @@ Este proyecto integra:
 
 ## 🤖 Conversación IA para el desarrollo de la app
 
-🧠 [Enlace a la conversación con IA]()
+🧠 [Enlace a la conversación con IA](/assets/ConQWEN/Resumen_Completo_DiarioClinico.txt)
 
 > Incluye diseño, modelado, reglas de negocio y despliegue.
 
